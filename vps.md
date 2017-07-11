@@ -1,0 +1,1 @@
+# [linode pptpd server 配置](http://linode.5base.com/linode-vpn)
