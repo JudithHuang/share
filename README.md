@@ -6,4 +6,4 @@
 
 # 学习资料
 
-## [yii2](./yii2/README.md.md)
+## [yii2](./yii2/README.md)
