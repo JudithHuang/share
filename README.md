@@ -2,4 +2,6 @@
 
 ## [VPS](./vps.md)
 
-## [oh my zsh](zsh.md)
+## [oh my zsh](./zsh.md)
+
+## [yii2](./yii2.md)
