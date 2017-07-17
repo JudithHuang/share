@@ -4,6 +4,10 @@
 
 ## [oh my zsh](./zsh.md)
 
+## [移动端远程 debug weinre](https://github.com/nupthale/weinre)
+
 # 学习资料
 
 ## [yii2](./yii2/README.md)
+
+## [php](php.md)
