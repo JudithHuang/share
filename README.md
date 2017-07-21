@@ -8,6 +8,8 @@
 
 ## [ubuntu](./ubuntu.md)
 
+## [chrome](./chrome/README.md)
+
 # 学习资料
 
 ## [yii2](./yii2/README.md)
