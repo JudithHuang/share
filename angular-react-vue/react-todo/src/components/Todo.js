@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux'
 
-import { Consts } from './engine/index';
-import * as todoActions from './reducers/todos';
-import {TodoItem} from './components/index';
-
-import './App.css';
+import { Consts } from '../engine/index';
+import * as todoActions from '../reducers/todos';
+import TodoItem from './TodoItem';
 
 class Todo extends Component {
   constructor(props) {
