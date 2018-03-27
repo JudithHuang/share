@@ -18,3 +18,5 @@
 - [我们为什么选择Vue.js而不是React](http://www.infoq.com/cn/news/2016/12/why-Vue-js-no-react)
 - [Angular 5 vs. React vs. Vue](https://itnext.io/angular-5-vs-react-vs-vue-6b976a3f9172)
 - [React / Angular / Vue — another point of view.](https://codeburst.io/react-angular-vue-another-point-of-view-766038f502b2)
+- [redux-thunk作用](http://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_two_async_operations.html)
+- [BaoMi React Demo](http://git.augmentum.com.cn/BaoMi/Training/tree/master/React/demo/Demo)
