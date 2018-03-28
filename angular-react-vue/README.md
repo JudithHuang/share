@@ -20,3 +20,4 @@
 - [React / Angular / Vue — another point of view.](https://codeburst.io/react-angular-vue-another-point-of-view-766038f502b2)
 - [redux-thunk作用](http://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_two_async_operations.html)
 - [BaoMi React Demo](http://git.augmentum.com.cn/BaoMi/Training/tree/master/React/demo/Demo)
+- [Transpiling EcmaScript6 code to ES5 using Babel](https://www.jonathan-petitcolas.com/2015/03/09/transpiling-es6-to-es5-using-babel.html)
