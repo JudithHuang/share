@@ -17,7 +17,6 @@ date: 2018年03月20日
 # Vue 基本概念
 ---
 
-- 指令
 - 计算属性与监听器
 - 过滤器
 - 条件渲染
@@ -28,32 +27,66 @@ date: 2018年03月20日
 - 生命周期
 
 [slide]
-# 指令
----
-
-[slide]
 # 计算属性与监听器
 ---
 
-[slide]
-# 过滤器
----
+模板内的表达式非常便利，但是设计它们的初衷是用于简单运算的。在模板中放入太多的逻辑会让模板过重且难以维护。
+
+<pre><code type="javascript">
+<div id="demo">{{ fullName }}</div>
+var vm = new Vue({
+  el: '#demo',
+  data: {
+    firstName: 'Foo',
+    lastName: 'Bar',
+    fullName: 'Foo Bar'
+  },
+  watch: {
+    firstName: function (val) {
+      this.fullName = val + ' ' + this.lastName
+    },
+    lastName: function (val) {
+      this.fullName = this.firstName + ' ' + val
+    }
+  },
+  computed: {
+    fullName: function () {
+      return this.firstName + ' ' + this.lastName
+    }
+  }
+})
+</code></pre>
 
 [slide]
 # 条件渲染
 ---
+v-if, v-else, v-else-if, v-show
 
 [slide]
 # 列表渲染
 ---
+- <div v-for="item of items" :key="item.id"></div>
+- 数组更新检测 (push, pop, shift, unshift, splice, sort,reverse)
 
 [slide]
 # 表单输入绑定
 ---
+## 基础用法    
+
+你可以用 v-model 指令在表单 <input> 及 <textarea> 元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。尽管有些神奇，但 v-model 本质上不过是语法糖。它负责监听用户的输入事件以更新数据，并对一些极端场景进行一些特殊处理。
+
+## 修饰符
+
+- .lazy
+- .number
+- .trim
 
 [slide]
 # 组件
 ---
+
+组件 (Component) 是 Vue.js 最强大的功能之一。组件可以扩展 HTML 元素，封装可重用的代码。在较高层面上，组件是自定义元素，Vue.js 的编译器为它添加特殊功能。在有些情况下，组件也可以表现为用 is 特性进行了扩展的原生 HTML 元素。
+所有的 Vue 组件同时也都是 Vue 的实例，所以可接受相同的选项对象 (除了一些根级特有的选项) 并提供相同的生命周期钩子。
 
 [slide]
 # 生命周期
@@ -109,6 +142,12 @@ ReactDOM.render(
 
 [slide]
 # 虚拟 DOM
+---
+- 一个基本的JavaScript对象
+- 生成Virtual DOM树
+- 对比两棵树的差异
+- 更新视图
+
 
 [slide]
 # props && state && 数据流
@@ -122,34 +161,41 @@ ReactDOM.render(
 
 [slide]
 # 组件
+---
 
 组件可以将UI切分成一些的独立的、可复用的部件，这样你就只需专注于构建每一个单独的部件。
 
 [slide]
 # 事件处理
+---
+
 - React事件绑定属性的命名采用驼峰式写法，而不是小写
 - 如果采用 JSX 的语法你需要传入一个函数作为事件处理函数，而不是一个字符串(DOM元素的写法)
 
 [slide]
 # 条件渲染
+---
 
 - 元素变量
-- 与运算符 &&
+- 与运算符
 - 三目运算符
 
 [slide]
 # 列表渲染
+---
 
 使用 Javascript Array.map 实现列表渲染
 
 [slide]
 # 表单
+---
 
 - 受控组件
 - 非受控组件
 
 [slide]
 # 生命周期
+---
 
 - componentWillMount
 - componentDidMount
