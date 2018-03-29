@@ -52,14 +52,24 @@ date: 2018年03月20日
 [slide]
 # JSX
 
+ 一种 JavaScript 的语法扩展。 我们推荐在 React 中使用 JSX 来描述用户界面， JSX 乍看起来可能比较像是模版语言，但事实上它完全是在 JavaScript 内部实现的。
+
+<pre><code type="javascript">
+const element = <h1>Hello, world!</h1>;
+</code></pre>
+
 [slide]
 # 虚拟 DOM
 
 [slide]
-# props 与 state
+# props && state && 数据流
+
+TODO (judith): 添加数据流图片
 
 [slide]
 # 组件
+
+组件可以将UI切分成一些的独立的、可复用的部件，这样你就只需专注于构建每一个单独的部件。
 
 [slide]
 # 事件处理
