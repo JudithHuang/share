@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { Todo } from './components/index';
+import { Todo, ControlledComponent, UnControlledComponent } from './components/index';
 
 class App extends Component {
   constructor(props) {
@@ -129,7 +129,21 @@ class App extends Component {
     console.log('end componentWillUnmount:', new Date());
   }
 
+  // 元素变量
+  renderCondition = (name='judith') => {
+    let msg = null;
+    if (name === 'judith') {
+      msg = <span>Hello, Your name is Judith</span>;
+    } else {
+      msg = <span>Sorry, I cannot find your name</span>;
+    }
+
+    return msg;
+  } 
+
   render() {
+    const name = 'judith';
+
     return (
       <div className="App">
         <header className="App-header">
@@ -137,6 +151,18 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <Todo></Todo>
+        {/* <ControlledComponent /> */}
+        {/* <UnControlledComponent /> */}
+        
+        <section>
+          元素变量: { this.renderCondition() }
+        </section>
+        <section>
+          与运算符: { name === 'judith' && <span>Hello, Judith</span> }
+        </section>
+        <section>
+          三目运算符: { name === 'judith' ? <span>Hello, Judith</span>: <span>Sorry, I cannot find your name</span> }
+        </section>
       </div>
     );
   }

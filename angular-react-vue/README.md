@@ -11,6 +11,9 @@
 
 # 参考文档
 
+- [Vue 中文文档](https://cn.vuejs.org/v2/guide/syntax.html)
+- [React 中文文档](https://doc.react-china.org/docs/hello-world.html)
+- []
 - [Todo list](http://todomvc.com/)
 - [create react app](https://github.com/facebook/create-react-app)
 - [vue cli](https://github.com/vuejs/vue-cli)
