@@ -25,3 +25,4 @@
 - [BaoMi React Demo](http://git.augmentum.com.cn/BaoMi/Training/tree/master/React/demo/Demo)
 - [Transpiling EcmaScript6 code to ES5 using Babel](https://www.jonathan-petitcolas.com/2015/03/09/transpiling-es6-to-es5-using-babel.html)
 - [Virtual DOM](https://github.com/y8n/blog/issues/5)
+- [Vue 生命周期](https://segmentfault.com/a/1190000008010666)

@@ -44,6 +44,18 @@ export default {
       editedTodo: null
     }
   },
+  created: function() {
+    console.log('created');
+  },
+  mounted: function() {
+    console.log('mounted');
+  },
+  updated: function() {
+    console.log('updated');
+  },
+  destroyed: function() {
+    console.log('destroyed');
+  },
   methods: {
     addTodo: function () {
       const value = this.newTodo && this.newTodo.trim();

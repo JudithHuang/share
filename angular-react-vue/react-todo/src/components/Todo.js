@@ -87,9 +87,6 @@ class Todo extends Component {
 
   renderMain() {
     const { todos } = this.props;
-    const activeTodoCount = todos.reduce(function (accum, todo) {
-      return todo.completed ? accum : accum + 1;
-    }, 0);
 
     if (todos.length) {
       return (

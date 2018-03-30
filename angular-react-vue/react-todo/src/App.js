@@ -2,13 +2,10 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { Todo, ControlledComponent, UnControlledComponent } from './components/index';
+import { Todo } from './components/index';
+// import { Todo, ControlledComponent, UnControlledComponent } from './components/index';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   /**
    * 执行场景
    * 在`render()`方法之前
@@ -139,10 +136,10 @@ class App extends Component {
     }
 
     return msg;
-  } 
+  }
 
   render() {
-    const name = 'judith';
+    // const name = 'judith';
 
     return (
       <div className="App">
@@ -153,7 +150,7 @@ class App extends Component {
         <Todo></Todo>
         {/* <ControlledComponent /> */}
         {/* <UnControlledComponent /> */}
-        
+        {/*
         <section>
           元素变量: { this.renderCondition() }
         </section>
@@ -163,6 +160,7 @@ class App extends Component {
         <section>
           三目运算符: { name === 'judith' ? <span>Hello, Judith</span>: <span>Sorry, I cannot find your name</span> }
         </section>
+        */}
       </div>
     );
   }

@@ -3,7 +3,6 @@ import { ObjectIDHelper, Todos } from '../engine/index';
 const ADD = 'todos/ADD';
 const EDIT = 'todos/EDIT';
 const DEL = 'todos/DELETE';
-const VIEW = 'todos/VIEW';
 const TOGGLE = 'todos/TOGGLE';
 
 // actions

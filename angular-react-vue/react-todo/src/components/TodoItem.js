@@ -7,7 +7,23 @@ import { Consts } from '../engine/index';
 class TodoItem extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { editText: this.props.todo.title };
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.todo !== this.props.todo ||
+      nextProps.editing !== this.props.editing ||
+      nextState.editText !== this.state.editText
+    );
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.editing && this.props.editing) {
+      const node = ReactDOM.findDOMNode(this.refs.editField);
+      node.focus();
+      node.setSelectionRange(node.value.length, node.value.length);
+    }
   }
 
   handleSubmit(event) {
@@ -37,26 +53,6 @@ class TodoItem extends Component {
   handleChange(event) {
     if (this.props.editing) {
       this.setState({editText: event.target.value});
-    }
-  }
-
-  getInitialState() {
-    return {editText: this.props.todo.title};
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextProps.todo !== this.props.todo ||
-      nextProps.editing !== this.props.editing ||
-      nextState.editText !== this.state.editText
-    );
-  }
-
-  componentDidUpdate(prevProps) {
-    if (!prevProps.editing && this.props.editing) {
-      const node = ReactDOM.findDOMNode(this.refs.editField);
-      node.focus();
-      node.setSelectionRange(node.value.length, node.value.length);
     }
   }
 
