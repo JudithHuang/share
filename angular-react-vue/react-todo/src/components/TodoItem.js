@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
+import { Link } from "react-router-dom";
 
 import { Consts } from '../engine/index';
 
@@ -57,6 +58,8 @@ class TodoItem extends Component {
   }
 
   render() {
+    const { match, todo } = this.props;
+    console.log(this.props);
     return (
       <li className={classNames({
         completed: this.props.todo.completed,
@@ -70,7 +73,7 @@ class TodoItem extends Component {
             onChange={this.props.onToggle}
           />
           <label onDoubleClick={this.handleEdit.bind(this)}>
-            {this.props.todo.title}
+            <Link to={`${match.url}/${todo.objectId}`}>{this.props.todo.title}</Link>
           </label>
           <button className="destroy" onClick={this.props.onDestroy} />
         </div>

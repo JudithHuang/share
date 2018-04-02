@@ -4,7 +4,7 @@
 require.config({
 	paths: {
 		angular: '../node_modules/angular/angular',
-    'bson-objectid': '../node_modules/bson-objectid/objectid'
+    	'bson-objectid': '../node_modules/bson-objectid/objectid'
 	},
 	shim: {
 		angular: {

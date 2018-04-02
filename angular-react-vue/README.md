@@ -2,7 +2,7 @@
 ## 使用 nodeppt 打开
 
 ```shell
- nodeppt start -p 8090 -d angular-react-vue -H 127.0.0.1
+nodeppt start -p 8090 -d angular-react-vue -H 127.0.0.1
 ```
 
 ## 直接访问静态网页
@@ -26,3 +26,6 @@
 - [Transpiling EcmaScript6 code to ES5 using Babel](https://www.jonathan-petitcolas.com/2015/03/09/transpiling-es6-to-es5-using-babel.html)
 - [Virtual DOM](https://github.com/y8n/blog/issues/5)
 - [Vue 生命周期](https://segmentfault.com/a/1190000008010666)
+- [redux doc](https://github.com/camsong/redux-in-chinese)
+- [es6](http://es6.ruanyifeng.com/)
+- [react-router doc](https://reacttraining.com/react-router/web/example/basic)

@@ -10,7 +10,7 @@ define([
   'angular',
   '../engine/dist/index'
 ], function (angular, engine) {
-  const { Todos, ObjectIDHelper } = engine;
+  const { Todos } = engine;
 
   return ['$scope', '$location', 'filterFilter',
     function ($scope, $location, filterFilter) {

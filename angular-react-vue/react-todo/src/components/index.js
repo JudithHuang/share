@@ -1,11 +1,13 @@
 import TodoItem from './TodoItem';
-import Todo from './Todo';
+import Todos from './Todos';
+import TodoDetail from './TodoDetail';
 import ControlledComponent from './ControlledComponent';
 import UnControlledComponent from './UnControlledComponent';
 
 export {
   TodoItem,
-  Todo,
+  Todos,
   ControlledComponent,
-  UnControlledComponent
+  UnControlledComponent,
+  TodoDetail
 };
