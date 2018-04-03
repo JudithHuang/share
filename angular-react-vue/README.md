@@ -29,3 +29,4 @@ nodeppt start -p 8090 -d angular-react-vue -H 127.0.0.1
 - [redux doc](https://github.com/camsong/redux-in-chinese)
 - [es6](http://es6.ruanyifeng.com/)
 - [react-router doc](https://reacttraining.com/react-router/web/example/basic)
+- [babel stage](http://guoyongfeng.github.io/my-gitbook/02/toc-babel-preset-stage-x.html)

@@ -688,7 +688,471 @@ function todoApp(state = initialState, action) {
 }
 ```
 
+[slide]
+# reducer 之 处理多个 action
+---
+- 还有两个 action 需要处理。就像我们处理 SET_VISIBILITY_FILTER 一样，我们引入 ADD_TODO 和 TOGGLE_TODO 两个actions 并且扩展我们的 reducer 去处理 ADD_TODO.
+- 不直接修改 state 中的字段，而是返回新对象。新的 todos 对象就相当于旧的 todos 在末尾加上新建的 todo。而这个新的 todo 又是基于 action 中的数据创建的。
+```javascript
+import {
+  ADD_TODO,
+  TOGGLE_TODO,
+  SET_VISIBILITY_FILTER,
+  VisibilityFilters
+} from './actions'
 
+...
+
+function todoApp(state = initialState, action) {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return Object.assign({}, state, {
+        visibilityFilter: action.filter
+      })
+    case ADD_TODO:
+      return Object.assign({}, state, {
+        todos: [
+          ...state.todos,
+          {
+            text: action.text,
+            completed: false
+          }
+        ]
+      })
+    default:
+      return state
+  }
+}
+```
+
+[slide]
+# 拆分 Reducer
+---
+- 目前的代码看起来有些冗长：
+```javascript
+function todoApp(state = initialState, action) {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return Object.assign({}, state, {
+        visibilityFilter: action.filter
+      })
+    case ADD_TODO:
+      return Object.assign({}, state, {
+        todos: [
+          ...state.todos,
+          {
+            text: action.text,
+            completed: false
+          }
+        ]
+      })
+    case TOGGLE_TODO:
+      return Object.assign({}, state, {
+        todos: state.todos.map((todo, index) => {
+          if (index === action.index) {
+            return Object.assign({}, todo, {
+              completed: !todo.completed
+            })
+          }
+          return todo
+        })
+      })
+    default:
+      return state
+  }
+}
+```
+
+[slide]
+# 拆分 Reducer
+---
+- 上面代码能否变得更通俗易懂？这里的 todos 和 visibilityFilter 的更新看起来是相互独立的。有时 state 中的字段是相互依赖的，需要认真考虑，但在这个案例中我们可以把 todos 更新的业务逻辑拆分到一个单独的函数里：
+```javascript
+function todos(state = [], action) {
+  switch (action.type) {
+    case ADD_TODO:
+      return [
+        ...state,
+        {
+          text: action.text,
+          completed: false
+        }
+      ]
+    case TOGGLE_TODO:
+      return state.map((todo, index) => {
+        if (index === action.index) {
+          return Object.assign({}, todo, {
+            completed: !todo.completed
+          })
+        }
+        return todo
+      })
+    default:
+      return state
+  }
+}
+
+function todoApp(state = initialState, action) {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return Object.assign({}, state, {
+        visibilityFilter: action.filter
+      })
+    case ADD_TODO:
+      return Object.assign({}, state, {
+        todos: todos(state.todos, action)
+      })
+    case TOGGLE_TODO:
+      return Object.assign({}, state, {
+        todos: todos(state.todos, action)
+      })
+    default:
+      return state
+  }
+}
+```
+- 注意 todos 依旧接收 state，但它变成了一个数组！现在 todoApp 只把需要更新的一部分 state 传给 todos 函数，todos 函数自己确定如何更新这部分数据。这就是所谓的 reducer 合成，它是开发 Redux 应用最基础的模式。
+
+[slide]
+# 拆分 Reducers
+---
+- 现在我们可以开发一个函数来做为主 reducer，它调用多个子 reducer 分别处理 state 中的一部分数据，然后再把这些数据合成一个大的单一对象。主 reducer 并不需要设置初始化时完整的 state。初始时，如果传入 undefined, 子 reducer 将负责返回它们的默认值。
+```javascript
+function todos(state = [], action) {
+  switch (action.type) {
+    case ADD_TODO:
+      return [
+        ...state,
+        {
+          text: action.text,
+          completed: false
+        }
+      ]
+    case TOGGLE_TODO:
+      return state.map((todo, index) => {
+        if (index === action.index) {
+          return Object.assign({}, todo, {
+            completed: !todo.completed
+          })
+        }
+        return todo
+      })
+    default:
+      return state
+  }
+}
+
+function visibilityFilter(state = SHOW_ALL, action) {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return action.filter
+    default:
+      return state
+  }
+}
+
+function todoApp(state = {}, action) {
+  return {
+    visibilityFilter: visibilityFilter(state.visibilityFilter, action),
+    todos: todos(state.todos, action)
+  }
+}
+```
+
+[slide]
+# 拆分 Reducers
+----
+- 注意每个 reducer 只负责管理全局 state 中它负责的一部分。每个 reducer 的 state 参数都不同，分别对应它管理的那部分 state 数据。
+- 现在看起来好多了！随着应用的膨胀，我们还可以将拆分后的 reducer 放到不同的文件中, 以保持其独立性并用于专门处理不同的数据域。
+- 最后，Redux 提供了 combineReducers() 工具类来做上面 todoApp 做的事情，这样就能消灭一些样板代码了。有了它，可以这样重构 todoApp：
+```javascript
+import { combineReducers } from 'redux'
+
+const todoApp = combineReducers({
+  visibilityFilter,
+  todos
+})
+
+export default todoApp
+
+// 等价于
+export default function todoApp(state = {}, action) {
+  return {
+    visibilityFilter: visibilityFilter(state.visibilityFilter, action),
+    todos: todos(state.todos, action)
+  }
+}
+```
+- combineReducers() 所做的只是生成一个函数，这个函数来调用你的一系列 reducer，每个 reducer 根据它们的 key 来筛选出 state 中的一部分数据并处理，然后这个生成的函数再将所有 reducer 的结果合并成一个大的对象。没有任何魔法。正如其他 reducers，如果 combineReducers() 中包含的所有 reducers 都没有更改 state，那么也就不会创建一个新的对象。
+
+[slide]
+# 拆分 Reducers
+---
+```javascript
+import { combineReducers } from 'redux'
+import {
+  ADD_TODO,
+  TOGGLE_TODO,
+  SET_VISIBILITY_FILTER,
+  VisibilityFilters
+} from './actions'
+const { SHOW_ALL } = VisibilityFilters
+
+function visibilityFilter(state = SHOW_ALL, action) {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return action.filter
+    default:
+      return state
+  }
+}
+
+function todos(state = [], action) {
+  switch (action.type) {
+    case ADD_TODO:
+      return [
+        ...state,
+        {
+          text: action.text,
+          completed: false
+        }
+      ]
+    case TOGGLE_TODO:
+      return state.map((todo, index) => {
+        if (index === action.index) {
+          return Object.assign({}, todo, {
+            completed: !todo.completed
+          })
+        }
+        return todo
+      })
+    default:
+      return state
+  }
+}
+
+const todoApp = combineReducers({
+  visibilityFilter,
+  todos
+})
+
+export default todoApp
+```
+
+[slide]
+# Store
+---
+- 在前面的章节中，我们学会了使用 action 来描述“发生了什么”，和使用 reducers 来根据 action 更新 state 的用法。
+- Store 就是把它们联系到一起的对象。Store 有以下职责：
+  - 维持应用的 state；
+  - 提供 getState() 方法获取 state；
+  - 提供 dispatch(action) 方法更新 state；
+  - 通过 subscribe(listener) 注册监听器;
+  - 通过 subscribe(listener) 返回的函数注销监听器。
+
+[slide]
+# Store
+---
+- 再次强调一下 Redux 应用只有一个单一的 store。当需要拆分数据处理逻辑时，你应该使用 reducer 组合 而不是创建多个 store。
+- 根据已有的 reducer 来创建 store 是非常容易的。在前一个章节中，我们使用 combineReducers() 将多个 reducer 合并成为一个。现在我们将其导入，并传递 createStore()。
+```javascript
+import { createStore } from 'redux'
+import todoApp from './reducers'
+let store = createStore(todoApp)
+```
+- createStore() 的第二个参数是可选的, 用于设置 state 初始状态。这对开发同构应用时非常有用，服务器端 redux 应用的 state 结构可以与客户端保持一致, 那么客户端可以将从网络接收到的服务端 state 直接用于本地数据初始化。
+```javascript
+let store = createStore(todoApp, window.STATE_FROM_SERVER)
+```
+
+[slide]
+# Store 之 发起 Actions
+---
+- 现在我们已经创建好了 store ，让我们来验证一下！虽然还没有界面，我们已经可以测试数据处理逻辑了。
+```javascript
+import {
+  addTodo,
+  toggleTodo,
+  setVisibilityFilter,
+  VisibilityFilters
+} from './actions'
+
+// 打印初始状态
+console.log(store.getState())
+
+// 每次 state 更新时，打印日志
+// 注意 subscribe() 返回一个函数用来注销监听器
+const unsubscribe = store.subscribe(() =>
+  console.log(store.getState())
+)
+
+// 发起一系列 action
+store.dispatch(addTodo('Learn about actions'))
+store.dispatch(addTodo('Learn about reducers'))
+store.dispatch(addTodo('Learn about store'))
+store.dispatch(toggleTodo(0))
+store.dispatch(toggleTodo(1))
+store.dispatch(setVisibilityFilter(VisibilityFilters.SHOW_COMPLETED))
+
+// 停止监听 state 更新
+unsubscribe();
+```
+
+[slide]
+# 数据流
+---
+- 严格的单向数据流是 Redux 架构的设计核心。
+- 这意味着应用中所有的数据都遵循相同的生命周期，这样可以让应用变得更加可预测且容易理解。同时也鼓励做数据范式化，这样可以避免使用多个且独立的无法相互引用的重复数据。
+
+[slide]
+# Redux 应用中数据的生命周期遵循下面 4 个步骤
+---
+
+[slide]
+# 1. 调用 store.dispatch(action)。
+---
+- Action 就是一个描述“发生了什么”的普通对象。比如：
+
+```js
+{ type: 'LIKE_ARTICLE', articleId: 42 }
+{ type: 'FETCH_USER_SUCCESS', response: { id: 3, name: 'Mary' } }
+{ type: 'ADD_TODO', text: 'Read the Redux docs.' }
+```
+- 可以把 action 理解成新闻的摘要。如 “玛丽喜欢42号文章。” 或者 “任务列表里添加了'学习 Redux 文档'”。
+
+- 你可以在任何地方调用 store.dispatch(action)，包括组件中、XHR 回调中、甚至定时器中。
+
+[slide]
+# 2. Redux store 调用传入的 reducer 函数。
+---
+- Store 会把两个参数传入 reducer： 当前的 state 树和 action。例如，在这个 todo 应用中，根 reducer 可能接收这样的数据：
+
+```js
+// 当前应用的 state（todos 列表和选中的过滤器）
+let previousState = {
+  visibleTodoFilter: 'SHOW_ALL',
+  todos: [
+    {
+      text: 'Read the docs.',
+      complete: false
+    }
+  ]
+}
+
+// 将要执行的 action（添加一个 todo）
+let action = {
+  type: 'ADD_TODO',
+  text: 'Understand the flow.'
+}
+
+// reducer 返回处理后的应用状态
+let nextState = todoApp(previousState, action)
+```
+- 注意 reducer 是纯函数。它仅仅用于计算下一个 state。它应该是完全可预测的：多次传入相同的输入必须产生相同的输出。它不应做有副作用的操作，如 API 调用或路由跳转。这些应该在 dispatch action 前发生。
+
+[slide]
+# 3. 根 reducer 应该把多个子 reducer 输出合并成一个单一的 state 树。
+---
+- 根 reducer 的结构完全由你决定。Redux 原生提供combineReducers()辅助函数，来把根 reducer 拆分成多个函数，用于分别处理 state 树的一个分支。
+
+- 下面演示 combineReducers() 如何使用。假如你有两个 reducer：一个是 todo 列表，另一个是当前选择的过滤器设置：
+
+```js
+function todos(state = [], action) {
+  // 省略处理逻辑...
+  return nextState
+}
+
+function visibleTodoFilter(state = 'SHOW_ALL', action) {
+  // 省略处理逻辑...
+  return nextState
+}
+
+let todoApp = combineReducers({
+  todos,
+  visibleTodoFilter
+})
+```
+- 当你触发 action 后，combineReducers 返回的 todoApp 会负责调用两个 reducer：
+
+```js
+let nextTodos = todos(state.todos, action)
+let nextVisibleTodoFilter = visibleTodoFilter(state.visibleTodoFilter, action)
+```
+- 然后会把两个结果集合并成一个 state 树：
+
+```js
+return {
+  todos: nextTodos,
+  visibleTodoFilter: nextVisibleTodoFilter
+}
+```
+- 虽然 combineReducers() 是一个很方便的辅助工具，你也可以选择不用；你可以自行实现自己的根 reducer！
+
+[slide]
+# 4. Redux store 保存了根 reducer 返回的完整 state 树。
+---
+- 这个新的树就是应用的下一个 state！所有订阅 store.subscribe(listener) 的监听器都将被调用；监听器里可以调用 store.getState() 获得当前 state。
+- 现在，可以应用新的 state 来更新 UI。如果你使用了 React Redux 这类的绑定库，这时就应该调用 component.setState(newState) 来更新。
+
+[slide]
+# 搭配 React
+---
+- 这里需要再强调一下：Redux 和 React 之间没有关系。Redux 支持 React、Angular、Ember、jQuery 甚至纯 JavaScript。
+- 尽管如此，Redux 还是和 React 和 Deku 这类库搭配起来用最好，因为这类库允许你以 state 函数的形式来描述界面，Redux 通过 action 的形式来发起 state 变化。
+
+[slide]
+# React Redux API
+---
+```javascript
+import { connect } from 'react-redux'
+import { setVisibilityFilter } from '../actions'
+import Link from '../components/Link'
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    active: ownProps.filter === state.visibilityFilter
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    onClick: () => {
+      dispatch(setVisibilityFilter(ownProps.filter))
+    }
+  }
+}
+
+const FilterLink = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Link)
+
+export default FilterLink
+```
+
+[slide]
+# 传入 Store
+---
+- 所有容器组件都可以访问 Redux store，所以可以手动监听它。一种方式是把它以 props 的形式传入到所有容器组件中。但这太麻烦了，因为必须要用 store 把展示组件包裹一层，仅仅是因为恰好在组件树中渲染了一个容器组件。
+- 建议的方式是使用指定的 React Redux 组件 <Provider> 来 魔法般的 让所有容器组件都可以访问 store，而不必显示地传递它。只需要在渲染根组件时使用即可。
+```javascript
+import React from 'react'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import todoApp from './reducers'
+import App from './components/App'
+
+let store = createStore(todoApp)
+
+render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
+```
 
 [slide]
 # redux 应用
@@ -817,6 +1281,69 @@ app.controller('myCtrl', function($scope, myService) {
     $scope.hex = myService.myFunc('hello');
 });
 ```
+
+[slide]
+# 异步 action 创建函数
+---
+- 在 基础教程 中，我们创建了一个简单的 todo 应用。它只有同步操作。每当 dispatch action 时，state 会被立即更新。
+- 如何把 之前定义 的同步 action 创建函数和网络请求结合起来呢？标准的做法是使用 Redux Thunk 中间件。要引入 redux-thunk 这个专门的库才能使用。我们 后面 会介绍 middleware 大体上是如何工作的；目前，你只需要知道一个要点：通过使用指定的 middleware，action 创建函数除了返回 action 对象外还可以返回函数。这时，这个 action 创建函数就成为了 thunk。
+- 当 action 创建函数返回函数时，这个函数会被 Redux Thunk middleware 执行。这个函数并不需要保持纯净；它还可以带有副作用，包括执行异步 API 请求。这个函数还可以 dispatch action，就像 dispatch 前面定义的同步 action 一样。
+```javascript
+export const fetchList = () => {
+  return async (dispatch) => {
+    const todos = await Todos.getList();
+    dispatch({ type: FETCH_LIST, todos });
+  }
+}
+```
+
+[slide]
+# 异步数据流
+---
+- 默认情况下，createStore() 所创建的 Redux store 没有使用 middleware，所以只支持 同步数据流。
+- 你可以使用 applyMiddleware() 来增强 createStore()。虽然这不是必须的，但是它可以帮助你用简便的方式来描述异步的 action。
+- 像 redux-thunk 或 redux-promise 这样支持异步的 middleware 都包装了 store 的 dispatch() 方法，以此来让你 dispatch 一些除了 action 以外的其他内容，例如：函数或者 Promise。你所使用的任何 middleware 都可以以自己的方式解析你 dispatch 的任何内容，并继续传递 actions 给下一个 middleware。比如，支持 Promise 的 middleware 能够拦截 Promise，然后为每个 Promise 异步地 dispatch 一对 begin/end actions。
+- 当 middleware 链中的最后一个 middleware 开始 dispatch action 时，这个 action 必须是一个普通对象。这是 同步式的 Redux 数据流 开始的地方（译注：这里应该是指，你可以使用任意多异步的 middleware 去做你想做的事情，但是需要使用普通对象作为最后一个被 dispatch 的 action ，来将处理流程带回同步方式）。
+
+[slide]
+# 搭配 React Router
+---
+- 现在你想在你的 Redux 应用中使用路由功能，可以搭配使用 React Router 来实现。 Redux 和 React Router 将分别成为你数据和 URL 的事实来源（the source of truth）。 在大多数情况下， 最好 将他们分开，除非你需要时光旅行和回放 action 来触发 URL 改变。
+
+[slide]
+# 连接 React Router 和 Redux 应用
+---
+在这一章，我们将使用 Todos 作为例子。我们建议你在阅读本章的时候，先将仓库克隆下来。
+
+首先，我们需要从 React Router 中导入 <Router /> 和 <Route />。代码如下：
+
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+在 React 应用中，通常你会用 <Router /> 包裹 <Route />。 如此，当 URL 变化的时候，<Router /> 将会匹配到指定的路由，然后渲染路由绑定的组件。 <Route /> 用来显式地把路由映射到应用的组件结构上。 用 path 指定 URL，用 component 指定路由命中 URL 后需要渲染的那个组件。
+```javascript
+const Root = () => (
+  <Router>
+    <Route path="/" component={App} />
+  </Router>  
+);
+```
+另外，在我们的 Redux 应用中，我们仍将使用 <Provider />。 <Provider /> 是由 React Redux 提供的高阶组件，用来让你将 Redux 绑定到 React （详见 搭配 React）。
+
+我们将用 <Provider /> 包裹 <Router />，以便于路由处理器可以访问 store。
+```javascript
+import { Provider } from 'react-redux';
+const Root = ({ store }) => (
+  <Provider store={store}>
+    <Router>
+      <Route path="/" component={App} />
+    </Router>
+  </Provider>
+);
+```
+
+[slide]
+# 从 URL 中读取数据
+---
+- params 是一个包含 url 中所有指定参数的对象。 例如：如果我们访问 localhost:3000/SHOW_COMPLETED，那么 match.params 将等价于 { filter: 'SHOW_COMPLETED' }。 现在，我们可以在 <App /> 中读取 URL 参数了。
 
 [slide]
 # 条件渲染

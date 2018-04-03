@@ -44,7 +44,7 @@ export default class Todos {
 
   static _editInStore = (todo) => {
     Todos._store = Todos._store.map((item) => {
-      if (item.objectId === todo.id) {
+      if (item.objectId === todo.objectId) {
         return todo;
       }
       return item;
